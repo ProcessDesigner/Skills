@@ -23,13 +23,13 @@ const userSchema = new Schema({
     password:{
         type:String,
     },
+    branch:{
+        type:String,
+    },
     division:{
         type:String,
     },
     year:{
-        type:String,
-    },
-    classroom:{
         type:String,
     },
     forgotpasswordToken:{

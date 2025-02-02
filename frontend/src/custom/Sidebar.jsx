@@ -15,14 +15,18 @@ import { useContext, createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/Slices/AuthSlice";
 
 const SidebarContext = createContext();
 
 export default function Sidebar({ children }) {
+  const dispath = useDispatch()
+  const{data,loading,error} = useSelector((state)=>state.auth)
+  const user = JSON.parse(data)
   const [expanded, setExpanded] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
 
   useEffect(() => {
     if (!expanded) {
@@ -30,9 +34,12 @@ export default function Sidebar({ children }) {
     }
   }, [expanded]);
 
-  const handleSignOut = () => {
-    logout();
-    navigate("/login");
+  const handleSignOut = async() => {
+    const response = await dispath(logout())
+    if(response.payload.success){
+
+      navigate("/login");
+    }
   };
 
   const getNavigationItems = () => {

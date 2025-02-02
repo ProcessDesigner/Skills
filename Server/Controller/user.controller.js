@@ -38,11 +38,11 @@ const login = async(req,res,next)=>{
 const signup = async(req,res,next)=>{
     try {
         
-        const {name,email,prn,rollNo,password,role,classroom} = req.body;
+        const {name,email,prn,rollNo,password,role,branch,division,year} = req.body;
         console.log(req.body)
 
         if(role === "student"){
-            if(!name||!email||!prn||!rollNo||!password||!role||!classroom){
+            if(!name||!email||!prn||!rollNo||!password||!role||!branch||!division||!year){
                 return next(new AppError('AllFields aare required',500));
             }
             const userExists = await User.findOne({ email });
@@ -54,7 +54,7 @@ const signup = async(req,res,next)=>{
             const otpToken = bcrypt.hashSync(otp, 10);
 
             res.cookie("otpToken", otpToken, { httpOnly: true, maxAge: 10 * 60 * 1000 }); 
-            res.cookie("tempUser", { name,email,prn,rollNo,password,role,classroom }, { httpOnly: true });
+            res.cookie("tempUser", { name,email,prn,rollNo,password,role,branch,division,year }, { httpOnly: true });
 
             await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
             return res.status(200).json({
@@ -133,7 +133,7 @@ const validate_otp_email = async (req, res, next) => {
         if (!isOtpValid) {
             return next(new AppError("Invalid OTP", 400));
         }
-        const { name,email,prn,rollNo,password,role,classroom } = tempUser;
+        const { name,email,prn,rollNo,password,role,branch,division,year } = tempUser;
         // const hashedPassword = bcrypt.hashSync(password, 10);
         
         if(role==='student'){
@@ -143,7 +143,9 @@ const validate_otp_email = async (req, res, next) => {
                 prn,
                 rollNo,
                 password,
-                classroom,
+                branch,
+                division,
+                year,
                 role
             })
             
@@ -211,6 +213,14 @@ const logout = async(req,res,next) =>{
 }
 
 
+const getAllStudentss = async(req,res,next)=>{
+    const student = User.find();
+    res.status(200).json({
+        success:true,
+        message:'All Students fetched',
+        student
+    })
+}
 
 const getProfile = async(req, res, next) => {
     const id = req.user.id;
@@ -360,5 +370,6 @@ export{
     forgotPassword,
     reset,
     logout,
-    update
+    update,
+    getAllStudentss
 }

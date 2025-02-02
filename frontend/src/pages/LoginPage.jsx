@@ -41,9 +41,10 @@ export default function LoginPage() {
   const dispatch = useDispatch()
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("This is login data",loginData)
     const response = await dispatch(loginUser(loginData)) 
     if(response.payload.success){
-      navigate("/");
+      navigate("/home");
     }
   };
 
@@ -97,20 +98,6 @@ export default function LoginPage() {
                 <EyeSlashIcon className="h-5 w-5 text-gray-500" />
               )}
             </button>
-          </div>
-
-          <div className="mb-4">
-            <Label htmlFor="role">Role</Label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="border rounded p-2 w-full"
-            >
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="teacher">Admin</option>
-            </select>
           </div>
 
           <Button type="submit" className="w-full mb-4" >

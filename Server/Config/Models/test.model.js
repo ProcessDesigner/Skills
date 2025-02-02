@@ -61,6 +61,7 @@ const testSchema = new Schema({
   total: {
     type: String,
   },
+  
 });
 
 const Test = model("Test", testSchema);

@@ -54,9 +54,9 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const dispatch = useDispatch()
   const {data} = useSelector((state)=>state.auth)
-  const user = data;
+  const user = JSON.parse(data);
   console.log("This is user data",user)
-
+  // const formData = new FormData()
 
   const defaultProfilePic =
     "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg";

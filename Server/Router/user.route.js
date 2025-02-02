@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { forgotPassword, getProfile, login, logout, regenerate_otp, reset, signup, update, validate_otp_email } from '../Controller/user.controller.js'
+import { forgotPassword, getAllStudentss, getProfile, login, logout, regenerate_otp, reset, signup, update, validate_otp_email } from '../Controller/user.controller.js'
 import { isLoggedIn } from '../middleware/auth.middleware.js'
 import { leetcode } from '../utils/leetcode.js'
 
@@ -15,6 +15,6 @@ router.get('/me',isLoggedIn,getProfile)
 router.post('/forgot',forgotPassword)
 router.post('/reset/:resetToken',reset)
 router.post("/leetcode/:id", leetcode);
-
+router.get('/getStudents',getAllStudentss)
 
 export default router;

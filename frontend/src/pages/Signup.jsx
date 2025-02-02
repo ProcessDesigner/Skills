@@ -1,82 +1,69 @@
-// custom/SignupPage.jsx
-import { useEffect, useState } from "react";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-// For redirection
-import Button from "../ui/Button"; // Assuming you have a Button component
-import Input from "../ui/Input"; // Assuming you have an Input component
-import Label from "../ui/Label"; // Assuming you have a Label component
-import Card from "../ui/Card"; // Assuming you have a Card component
+import { useState } from "react"
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
+import Button from "../ui/Button"
+import Input from "../ui/Input"
+import Label from "../ui/Label"
+import Card from "../ui/Card"
+import Select from "../ui/Select"
+import TermsModal from "../ui/TermsModal"
+import { useDispatch } from "react-redux"
+import { registerUser } from "../store/Slices/AuthSlice"
+import { useNavigate } from "react-router-dom"
 
-
-import Select from '../ui/Select';
-import TermsModal from "../ui/TermsModal";
-
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { Loader } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { registerUser } from "../store/Slices/AuthSlice";
-
-export default function SignupPage() {
+const SignupPage = () => {
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
     prn: "",
     rollNo: "",
     password: "",
-    classroom: "",
-    role: ""
-  });
+    role: "",
+    branch: "",
+    division: "",
+    year: "",
+  })
 
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isTermsChecked, setIsTermsChecked] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  // const { signup, error, isLoading } = useAuthStore();
-  const navigate = useNavigate();
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isTermsChecked, setIsTermsChecked] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const dispatch = useDispatch()
-  const toggleShowPassword = () => setShowPassword(!showPassword);
-  const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+  const navigate = useNavigate()
+  const toggleShowPassword = () => setShowPassword(!showPassword)
+  const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword)
 
   const handleInputValue = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    console.log(`Field updated: ${name}, Value: ${value}`);
+    const { name, value } = e.target
     setSignupData({
       ...signupData,
-      [name]: value
-    });
-  };
+      [name]: value,
+    })
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async(e) => {
+    e.preventDefault()
     if (!isTermsChecked) {
-      toast.error("Please agree to the Terms and Conditions to proceed.");
-      return;
+      alert("Please agree to the Terms and Conditions to proceed.")
+      return
     }
+    console.log(signupData)
     const response = await dispatch(registerUser(signupData))
-    if(response.payload.success){
+    if(response.payload.success){     
       navigate("/verify-email");
     }
-  };
+  }
 
   const handleAgreeToTerms = () => {
-    setIsTermsChecked(true);  // Check the checkbox
-    setIsModalOpen(false);  // Close the modal
-  };
-  
+    setIsTermsChecked(true)
+    setIsModalOpen(false)
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-[550px] p-6"
-        footerText="Already have an account?"
-        linkText="Login"
-        linkHref="/login"
-      >
+      <Card className="w-[550px] p-6" footerText="Already have an account?" linkText="Login" linkHref="/login">
         <h2 className="text-xl font-semibold mb-4 text-center">Sign Up</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <Label htmlFor="role">Role</Label>
@@ -86,7 +73,7 @@ export default function SignupPage() {
                 value={signupData.role}
                 onChange={handleInputValue}
                 options={[
-                  { value: "Specify Your role", label: null },
+                  { value: "", label: "Specify Your role" },
                   { value: "student", label: "Student" },
                   { value: "teacher", label: "Teacher" },
                 ]}
@@ -128,7 +115,7 @@ export default function SignupPage() {
                     id="rollNo"
                     type="text"
                     name="rollNo"
-                    placeholder="Enter your RollNo."
+                    placeholder="Enter your Roll No."
                     value={signupData.rollNo}
                     onChange={handleInputValue}
                     required
@@ -147,20 +134,53 @@ export default function SignupPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="classroom">Class</Label>
+                  <Label htmlFor="branch">Branch</Label>
                   <Select
-                    id="classroom"
-                    name="classroom"
-                    value={signupData.classroom}
+                    id="branch"
+                    name="branch"
+                    value={signupData.branch}
                     onChange={handleInputValue}
                     options={[
-                      { value: "", label: "Select" },
-                      { value: "FYCM1", label: "FYCM1" },
-                      { value: "FYCM2", label: "FYCM2" },
-                      { value: "FYCM3", label: "FYCM3" },
-                      { value: "FYETC", label: "FYETC" },
-                      { value: "FYAIDS", label: "FYAIDS" },
-                      { value: "FYACT", label: "FYACT" },
+                      { value: "", label: "Select Branch" },
+                      { value: "CM", label: "Computer Engineering" },
+                      { value: "IT", label: "Information Technology" },
+                      { value: "ETC", label: "Electronics & Telecommunication" },
+                      { value: "AIDS", label: "AI & Data Science" },
+                    ]}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <Label htmlFor="division">Division</Label>
+                  <Select
+                    id="division"
+                    name="division"
+                    value={signupData.division}
+                    onChange={handleInputValue}
+                    options={[
+                      { value: "", label: "Select Division" },
+                      { value: "3", label: "3" },
+                      { value: "4", label: "4" },
+                      { value: "9", label: "9" },
+                    ]}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="year">Year</Label>
+                  <Select
+                    id="year"
+                    name="year"
+                    value={signupData.year}
+                    onChange={handleInputValue}
+                    options={[
+                      { value: "", label: "Select Year" },
+                      { value: "FY", label: "First Year" },
+                      { value: "SY", label: "Second Year" },
+                      { value: "TY", label: "Third Year" },
+                      { value: "LY", label: "Last Year" },
                     ]}
                     required
                   />
@@ -181,11 +201,7 @@ export default function SignupPage() {
                 onChange={handleInputValue}
                 required
               />
-              <button
-                type="button"
-                onClick={toggleShowPassword}
-                className="absolute top-10 right-2 flex items-center"
-              >
+              <button type="button" onClick={toggleShowPassword} className="absolute top-10 right-2 flex items-center">
                 {showPassword ? (
                   <EyeIcon className="h-5 w-5 text-gray-500" />
                 ) : (
@@ -218,7 +234,6 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Terms and Conditions Checkbox */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -229,27 +244,22 @@ export default function SignupPage() {
             />
             <Label htmlFor="terms">
               I agree to the{" "}
-              <span
-                onClick={() => setIsModalOpen(true)} // Open modal
-                className="text-primary hover:underline cursor-pointer"
-              >
+              <span onClick={() => setIsModalOpen(true)} className="text-primary hover:underline cursor-pointer">
                 Terms and Conditions
               </span>
             </Label>
           </div>
 
-          <Button type="submit" className="w-full mb-4" >
+          <Button type="submit" className="w-full mb-4">
             Sign Up
           </Button>
         </form>
 
-        {/* Terms and Conditions Modal */}
-        <TermsModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
-          onAgree={handleAgreeToTerms}  // Pass the handleAgreeToTerms function
-        />
+        <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAgree={handleAgreeToTerms} />
       </Card>
     </div>
-  );
+  )
 }
+
+export default SignupPage
+

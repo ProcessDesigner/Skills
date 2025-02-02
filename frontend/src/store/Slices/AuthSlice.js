@@ -6,6 +6,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const initialState = {
     loading:false,
     error:null,
+    students:"",
     isLoggedIn :localStorage.getItem('isLoggedIn')||false,
     data:localStorage.getItem('data')|| {},
     role: localStorage.getItem('role')||""
@@ -158,6 +159,21 @@ export const resetPassword = createAsyncThunk(
         }
     }
   )
+  export const getAllStudentss = createAsyncThunk(
+    "user/getStudents",
+    async(data,{rejectWithValue})=>{
+        try {
+            const response = await axiosInstance.get(`user/getStudents`)
+            return await response.data
+        } catch (error) {
+            console.log(error);
+            const errorMessage =
+            error?.response?.data?.message || "Failed to get Students";
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage); 
+        }
+    }
+  )
   
 const authSlice = createSlice({
     name:'auth',
@@ -171,7 +187,7 @@ const authSlice = createSlice({
                 localStorage.setItem("isLoggedIn", true);
                 localStorage.setItem("role", JSON.stringify(action?.payload?.user?.role));
                 
-                state.data = action.payload.user;
+                state.data = JSON.stringify(action.payload.user);
                 state.role = action.payload.user?.role;
                 state.isLoggedIn = true;
             })
@@ -185,6 +201,16 @@ const authSlice = createSlice({
                 state.role = action.payload.user?.role;
                 state.isLoggedIn = true;
             })
+            .addCase(logout.fulfilled,(state,action)=>{
+                localStorage.setItem('isLoggedIn',false),
+                localStorage.setItem('data',{}),
+                localStorage.setItem('role',"")
+
+                state.data = {}
+                state.role = "",
+                state.isLoggedIn = false
+            }
+            )
             .addCase(getUser.pending,(state,action)=>{
                 state.error = null
                 state.loading = true
@@ -198,6 +224,19 @@ const authSlice = createSlice({
                 state.error = action.payload
                 state.loading = false
             })
+            .addCase(getAllStudentss.pending,(state,action)=>{
+                state.error = null
+                state.loading = true
+            })
+            .addCase(getAllStudentss.fulfilled,(state,action)=>{
+                state.students = action.payload.student
+                state.loading = false
+            })
+            .addCase(getAllStudentss.rejected,(state,action)=>{
+                state.error = action.payload
+                state.loading = false
+            })
+
         
         
     }
